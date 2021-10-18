@@ -1,0 +1,59 @@
+<style>
+body {
+  padding: 25px;
+  background-color: gray;
+  color: white;
+  font-size: 25px;
+}
+textarea {align: center}
+div {text-align: center;}
+h1 {text-align: center;}
+h1 {font-size: 70px;}
+h1 {color: purple;}
+p {text-align: center;}
+p {font-size: 30px;}
+p {color: purple;}
+form {text-align: center;}
+form {padding: 14px 28px;}
+form {font-size: 30px;}
+}
+</style>
+<div>
+<textarea id="text" rows=15 cols=80 maxlength=1000000>
+</textarea>
+</div>
+<div>
+    <audio id="audio" controls="">
+        <source id="source" type="audio/wav">
+    </audio>
+<div>
+<div>
+    <button type="submit" id="button">Convert</button>
+</div>
+<span id="charlen">0</span>
+
+<script>
+
+document.getElementById("text").oninput = function() {
+    document.getElementById("charlen").innerHTML = document.getElementById("text").value.length;
+};
+
+document.getElementById("button").onclick = async function() {
+    let text = document.getElementById("text").value;
+    let speak = await fetch("https://api.streamelements.com/kappa/v2/speech?voice=Brian&text=" + encodeURIComponent(text.trim()));
+
+    if (speak.status != 200) {
+        alert(await speak.text());
+        return;
+    }
+
+    let mp3 = await speak.blob();
+
+    let blobUrl = URL.createObjectURL(mp3);
+    document.getElementById("source").setAttribute("src", blobUrl);
+    let audio = document.getElementById("audio");
+    audio.pause();
+    audio.load();
+    audio.play();
+};
+</script>
